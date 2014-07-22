@@ -1,6 +1,6 @@
 {
   "name": "bs-snippet-injector",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Write & Remove the BrowserSync Snippet to a file",
   "main": "index.js",
   "scripts": {
@@ -19,5 +19,8 @@
   "bugs": {
     "url": "https://github.com/shakyShane/bs-snippet-injector/issues"
   },
-  "homepage": "https://github.com/shakyShane/bs-snippet-injector"
+  "homepage": "https://github.com/shakyShane/bs-snippet-injector",
+  "dependencies": {
+    "tfunk": "0.0.2"
+  }
 }
