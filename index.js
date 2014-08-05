@@ -44,7 +44,7 @@ module.exports = {
         opts.log("debug", "Setting events");
 
         bs.events.on("service:ready", addSnippet.bind(null, bs, opts));
-//        bs.events.on("service:exit",  removeSnippet.bind(null, bs, opts));
+        bs.events.on("service:exit",  removeSnippet.bind(null, bs, opts));
     }
 };
 
