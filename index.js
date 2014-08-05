@@ -5,7 +5,7 @@ var tfunk = require("tfunk");
 /**
  * @type {string}
  */
-var PLUGIN_NAME = "snippet-injector";
+var PLUGIN_NAME = "Snippet Injector";
 
 /**
  * @type
@@ -34,10 +34,10 @@ module.exports = {
     plugin: function (bs, opts) {
 
         currentFilePath = path.resolve(opts.file);
-        opts.log   = getInfoLogger(bs);
-        opts.debug = getDebugLogger(bs);
+        var logger = bs.getLogger(PLUGIN_NAME);
+        opts.log = logger;
 
-        opts.debug("Setting events");
+        opts.log("debug", "Setting events");
         bs.events.on("service:ready", addSnippet.bind(null, bs, opts));
         bs.events.on("service:exit",  removeSnippet.bind(null, bs, opts));
     }
@@ -51,7 +51,7 @@ module.exports = {
  */
 function addSnippet(bs, opts) {
 
-    opts.debug("Reading the file: %s", currentFilePath);
+    opts.log("debug", "Reading the file: %s", currentFilePath);
 
     var read = fs.readFileSync(currentFilePath, "utf8");
     var found = false;
@@ -63,14 +63,12 @@ function addSnippet(bs, opts) {
     });
 
     if (found) {
-        opts.debug("Writing the file: %s", currentFilePath);
+        opts.log("debug", "Writing the file: %s", currentFilePath);
         fs.writeFileSync(currentFilePath, modded);
-        opts.log(messages.added(path.basename(currentFilePath)));
-
+        opts.log("info", messages.added(path.basename(currentFilePath)));
     } else {
-        opts.log(messages.notFound(path.basename(currentFilePath)));
+        opts.log("info", messages.notFound(path.basename(currentFilePath)));
     }
-
 }
 
 /**
@@ -86,32 +84,8 @@ function wrap (item) {
  * @param {Object} opts - plugin specific options
  */
 function removeSnippet(bs, opts) {
-    var read     = fs.readFileSync(currentFilePath, "utf8");
+    var read   = fs.readFileSync(currentFilePath, "utf8");
     var modded = read.replace(currentSnippet, "</body>");
     fs.writeFileSync(currentFilePath, modded);
-    opts.log(messages.removed(path.basename(currentFilePath)));
-}
-
-var prefix = tfunk("%Cgreen:[%R%s%Cgreen:]%R ".replace("%s", PLUGIN_NAME));
-
-/**
- * @param {object} bs
- * @returns {Function}
- */
-function getInfoLogger(bs) {
-    return function (msg, vars) {
-        var msg = prefix + msg;
-        bs.events.emit("msg:info", {msg: msg, vars: vars});
-    };
-}
-
-/**
- * @param {object} bs
- * @returns {Function}
- */
-function getDebugLogger(bs) {
-    return function (msg, vars) {
-        var msg = prefix + msg;
-        bs.events.emit("msg:debug", {msg: msg, vars: vars});
-    };
+    opts.log("info", messages.removed(path.basename(currentFilePath)));
 }
