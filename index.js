@@ -34,7 +34,7 @@ var messages = {
  */
 module.exports = {
 
-    name: PLUGIN_NAME,
+    "plugin:name": PLUGIN_NAME,
 
     plugin: function (bs, opts) {
 
