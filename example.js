@@ -1,4 +1,4 @@
-var bs = require("/Users/shakyshane/sites/os-browser-sync");
+var bs = require("browser-sync");
 
 bs.use(require("./index"), {file: "index.html"});
 

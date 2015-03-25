@@ -1,6 +1,5 @@
 var fs    = require("fs");
 var path  = require("path");
-var tfunk = require("tfunk");
 
 /**
  * @type {string}
@@ -12,19 +11,19 @@ var PLUGIN_NAME = "Snippet Injector";
  */
 var messages = {
     added: function (path) {
-        return tfunk("%Cgreen:Snippet added to %Ccyan:" + path);
+        return "{green:Snippet added to {cyan:" + path
     },
     removed: function (path) {
-        return tfunk("%Cgreen:Snippet removed from %Ccyan:" + path);
+        return "{green:Snippet removed from {cyan:" + path
     },
     exists: function (path) {
-        return tfunk("%Cgreen:Snippet already exists in: %Ccyan:" + path);
+        return "{green:Snippet already exists in: {cyan:" + path
     },
     notFound: function (path) {
-        return tfunk("%Cred:ERROR:%R Closing body tag not found in: %Ccyan:" + path);
+        return "{red:ERROR:} Closing body tag not found in: {cyan:" + path
     },
     fileNotFound: function (path) {
-        return tfunk("%Cred:ERROR:%R File not found!: %Ccyan:" + path);
+        return "{red:ERROR:} File not found!: {cyan:" + path
     }
 };
 
@@ -36,14 +35,14 @@ module.exports = {
 
     "plugin:name": PLUGIN_NAME,
 
-    plugin: function (bs, opts) {
+    plugin: function (opts, bs) {
 
         opts.currentFilePath = path.resolve(opts.file);
 
-        opts.log = bs.getLogger(PLUGIN_NAME);
-        opts.log("debug", "Setting events");
+        opts.logger = bs.getLogger(PLUGIN_NAME);
+        opts.logger.debug("Setting events");
 
-        bs.events.on("service:ready", addSnippet.bind(null, bs, opts));
+        bs.events.on("service:running", addSnippet.bind(null, bs, opts));
         bs.events.on("service:exit",  removeSnippet.bind(null, bs, opts));
     }
 };
@@ -58,7 +57,7 @@ function addSnippet(bs, opts) {
 
     var currentFilePath = opts.currentFilePath;
 
-    opts.log("debug", "Reading the file: %s", currentFilePath);
+    opts.logger.debug("Reading the file: %s", currentFilePath);
 
     var read;
 
@@ -66,28 +65,28 @@ function addSnippet(bs, opts) {
         read = fs.readFileSync(currentFilePath, "utf8");
     } catch (e) {
         opts.errored = true;
-        return opts.log("info", messages.fileNotFound(path.basename(currentFilePath)));
+        return opts.logger.info(messages.fileNotFound(path.basename(currentFilePath)));
     }
 
     var found = false;
 
-    if (read.indexOf(bs.options.snippet) > -1) {
-        opts.log("info", messages.exists(currentFilePath));
+    if (read.indexOf(bs.options.get("snippet")) > -1) {
+        opts.logger.info(messages.exists(currentFilePath));
         return;
     }
 
     var modded = read.replace(/<\/body>(?![\s\S]*<\/body>)/, function () {
-        opts.currentSnippet = wrap(bs.options.snippet) + "\n" + arguments[0];
+        opts.currentSnippet = wrap(bs.options.get("snippet")) + "\n" + arguments[0];
         found = true;
         return opts.currentSnippet;
     });
 
     if (found) {
-        opts.log("debug", "Writing the file: %s", currentFilePath);
+        opts.logger.debug("Writing the file: %s", currentFilePath);
         fs.writeFileSync(currentFilePath, modded);
-        opts.log("info", messages.added(path.basename(currentFilePath)));
+        opts.logger.info(messages.added(path.basename(currentFilePath)));
     } else {
-        opts.log("info", messages.notFound(path.basename(currentFilePath)));
+        opts.logger.info(messages.notFound(path.basename(currentFilePath)));
     }
 }
 
@@ -114,5 +113,5 @@ function removeSnippet(bs, opts) {
         return "</body>";
     });
     fs.writeFileSync(opts.currentFilePath, modded);
-    opts.log("info", messages.removed(path.basename(opts.currentFilePath)));
+    opts.logger.info(messages.removed(path.basename(opts.currentFilePath)));
 }
