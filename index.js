@@ -37,6 +37,8 @@ module.exports = {
 
     plugin: function (opts, bs) {
 
+        opts.file = opts.file || "";
+
         opts.currentFilePath = path.resolve(opts.file);
 
         opts.logger = bs.getLogger(PLUGIN_NAME);
