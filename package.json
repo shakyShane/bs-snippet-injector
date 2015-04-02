@@ -1,6 +1,6 @@
 {
   "name": "bs-snippet-injector",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "Write & Remove the BrowserSync Snippet to a file",
   "main": "index.js",
   "scripts": {
