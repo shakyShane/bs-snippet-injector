@@ -79,7 +79,7 @@ function addSnippet(bs, opts) {
     }
 
     var modded = read.replace(/<\/body>(?![\s\S]*<\/body>)/, function () {
-        opts.logger.debug("Reading the file: %s", bs.options.get("snippet"));
+        opts.logger.info("Snippet injected: %s", bs.options.get("snippet"));
         opts.currentSnippet = jsx ? "<div dangerouslySetInnerHTML={{__html:" +bs.options.get("snippet")+ "}} /> \n" + arguments[0] : bs.options.get("snippet") + "\n" + arguments[0];
         found = true;
         return opts.currentSnippet;
