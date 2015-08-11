@@ -58,7 +58,7 @@ module.exports = {
 function addSnippet(bs, opts) {
 
     var currentFilePath = opts.currentFilePath;
-    var noWrap = opts.noWrap;
+    var jsx = opts.jsx;
 
     opts.logger.debug("Reading the file: %s", currentFilePath);
 
@@ -79,7 +79,8 @@ function addSnippet(bs, opts) {
     }
 
     var modded = read.replace(/<\/body>(?![\s\S]*<\/body>)/, function () {
-        opts.currentSnippet = ( noWrap ? bs.options.get("snippet") : wrap(bs.options.get("snippet")) ) + "\n" + arguments[0];
+        opts.logger.debug("Reading the file: %s", bs.options.get("snippet"));
+        opts.currentSnippet = jsx ? "<div dangerouslySetInnerHTML={{__html:" +bs.options.get("snippet")+ "}} /> \n" + arguments[0] : bs.options.get("snippet") + "\n" + arguments[0];
         found = true;
         return opts.currentSnippet;
     });
